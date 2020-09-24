@@ -1,5 +1,5 @@
-import * as React from "react";
-import axios from "axios";
+import * as React from 'react';
+import axios from 'axios';
 import {
   Avatar,
   Card,
@@ -10,31 +10,33 @@ import {
   FAB,
   Searchbar,
   IconButton,
-} from "react-native-paper";
+} from 'react-native-paper';
 import { Linking } from 'react-native';
 
-import * as MediaLibrary from "expo-media-library";
-import * as FileSystem from "expo-file-system";
-import * as Permissions from "expo-permissions";
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+import * as Permissions from 'expo-permissions';
 
-import { View, StyleSheet } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { View, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { URL } from '../../config';
-import adminStyles from "../admin/AdminStyles";
-import { AuthContext } from "../../context/AuthContext";
+import adminStyles from '../admin/AdminStyles';
+import { AuthContext } from '../../context/AuthContext';
 const LeftContent = (props) => <Avatar.Icon {...props} icon="folder" />;
 
 const StudentFileView = ({ navigation, route }) => {
   const url = URL;
   const [files, setFiles] = React.useState(null);
   const [filtered, setFiltered] = React.useState();
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState('');
   const [flag, setFlag] = React.useState(false);
   const { authState } = React.useContext(AuthContext);
   const { user } = authState;
 
+
+  const [token, setToken] = React.useState('');
+
   const { class_ } = user;
-  // const { class_ } = route.params;
 
   const date = new Date();
   const todayDate = date.getDate();
@@ -49,12 +51,12 @@ const StudentFileView = ({ navigation, route }) => {
 
   const getFiles = async () => {
     try {
-      console.log(url + "/documents/class/" + class_);
-      let res = await axios.get(url + "/documents/class/" + class_);
+      console.log(url + '/documents/class/' + class_);
+      let res = await axios.get(url + '/documents/class/' + class_);
       const files_ = res.data.files;
       setFiles(files_);
-      setSearchQuery(" ");
-      setSearchQuery("");
+      setSearchQuery(' ');
+      setSearchQuery('');
       console.log(date);
     } catch (err) {
       console.log(err);
@@ -63,16 +65,15 @@ const StudentFileView = ({ navigation, route }) => {
 
   const saveFile = async (fileUri) => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    if (status === "granted") {
+    if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri);
       await MediaLibrary.createAlbumAsync("Download", asset, false);
-      alert("File downloaded.");
     }
   };
 
   const downloadFile = (filename, caption) => {
     const uri = URL + `/documents/file/${filename}`;
-    let fileUri = FileSystem.documentDirectory + caption + ".pdf";
+    let fileUri = FileSystem.documentDirectory + caption + '.pdf';
     FileSystem.downloadAsync(uri, fileUri)
       .then(({ uri }) => {
         saveFile(uri);
@@ -87,7 +88,7 @@ const StudentFileView = ({ navigation, route }) => {
   }, [flag]);
 
   React.useEffect(() => {
-    if (searchQuery === "") {
+    if (searchQuery === '') {
       setFiltered(files);
     } else {
       setFiltered(
@@ -112,10 +113,13 @@ const StudentFileView = ({ navigation, route }) => {
           {filtered ? (
             filtered.map((file) => (
               <View key={file._id}>
-                <Card style={{ marginTop: 10, backgroundColor: "#eee" }}>
+                <Paragraph>
+                  Check your download folder after downloading files.
+                </Paragraph>
+                <Card style={{ marginTop: 10, backgroundColor: '#eee' }}>
                   <TouchableRipple onPress={() => {}}>
                     <React.Fragment>
-                      <View style={{ display: "flex", flexDirection: "row" }}>
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
                         <View>
                           <Card.Content>
                             <Title>{file.caption}</Title>
@@ -136,12 +140,13 @@ const StudentFileView = ({ navigation, route }) => {
                           </Card.Content>
                         </View>
                         <View
-                          style={{ marginLeft: "auto", alignSelf: "center" }}
+                          style={{ marginLeft: 'auto', alignSelf: 'center' }}
                         >
                           <IconButton
                             icon="download"
                             size={35}
                             onPress={() => {
+                              alert("File Downloaded !");
                               downloadFile(file.filename, file.caption);
                             }}
                             color="#2D5264"
@@ -151,10 +156,12 @@ const StudentFileView = ({ navigation, route }) => {
                           style={{ marginLeft: 'auto', alignSelf: 'center' }}
                         >
                           <IconButton
-                            icon="upload"
+                            icon="send"
                             size={35}
                             onPress={() => {
-                              Linking.openURL(`mailto:${file.teacherEmail}?subject=${file.caption}&body=Description`);
+                              Linking.openURL(
+                                `mailto:${file.teacherEmail}?subject=${file.caption}&body=Attach your submission here.`
+                              );
                             }}
                             color="#2D5264"
                           />
@@ -176,42 +183,30 @@ const StudentFileView = ({ navigation, route }) => {
           )}
         </View>
       </ScrollView>
-      {/* <FAB
-        style={styles.fab}
-        icon='plus'
-        onPress={() =>
-          navigation.navigate('Add', {
-            // classId: class_,
-            teacherId: user._id,
-            flag,
-            setFlag,
-          })
-        }
-      /> */}
     </React.Fragment>
   );
 };
 
 const styles = StyleSheet.create({
   viewStyle: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
     marginHorizontal: 10,
     marginVertical: 10,
   },
   container: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    height: "100%",
-    width: "100%",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    height: '100%',
+    width: '100%',
   },
   loading: {
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   fab: {
-    position: "absolute",
+    position: 'absolute',
     margin: 16,
     right: 0,
     bottom: 0,
