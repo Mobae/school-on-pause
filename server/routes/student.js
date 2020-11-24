@@ -187,7 +187,7 @@ router.post("/update/teacher", auth, admin, async (req, res) => {
   }
 });
 
-router.post("/add", async (req, res) => {
+router.post("/add", auth, admin, async (req, res) => {
   let obj = req.body;
   obj = JSON.parse(JSON.stringify(obj).replace(/"\s+|\s+"/g, '"'));
   const {

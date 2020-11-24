@@ -11,6 +11,7 @@ const app = express();
 connectDB();
 
 app.use(express.json());
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/auth", require("./routes/auth"));
 app.use("/student", require("./routes/student"));
 app.use("/attendance", require("./routes/attendance"));
